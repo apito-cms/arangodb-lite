@@ -102,7 +102,77 @@ func (q *Query) One(result interface{}) (err error) {
 	return nil
 }
 
-func (q *Query) AllBytes() (*types.Results, error) {
+func (q *Query) OneRawBytes() ([]byte, error) {
+	aql, err := json.Marshal(&types.Query{
+		Aql:       q.aql,
+		Count:     true,
+		BatchSize: 1,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (q *Query) OneResult() (*types.Result, error) {
+	aql, err := json.Marshal(&types.Query{
+		Aql:       q.aql,
+		Count:     true,
+		BatchSize: 1,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := new(types.Result)
+	err = json.Unmarshal(resp, reply)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check for DB error
+	if reply.Error {
+		return nil, errors.New("Query error")
+	}
+
+	// Check for no results
+	if len(reply.Result) <= 0 {
+		return nil, errc.ErrorCodeNoResult.Error()
+	}
+
+	return reply, nil
+}
+
+func (q *Query) AllRawBytes() ([]byte, error) {
+	aql, err := json.Marshal(&types.Query{
+		Aql:       q.aql,
+		Count:     true,
+		BatchSize: q.batchSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func (q *Query) AllResults() (*types.Results, error) {
 	aql, err := json.Marshal(&types.Query{
 		Aql:       q.aql,
 		Count:     true,
