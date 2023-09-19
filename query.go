@@ -1,12 +1,12 @@
 package arangodb
 
 import (
-	"fmt"
-	"strings"
-	"github.com/thedanielforum/arangodb/types"
 	"encoding/json"
+	"fmt"
+	"github.com/apito-cms/arangodb-lite/errc"
+	"github.com/apito-cms/arangodb-lite/types"
 	"github.com/pkg/errors"
-	"github.com/thedanielforum/arangodb/errc"
+	"strings"
 )
 
 type Query struct {
@@ -15,7 +15,7 @@ type Query struct {
 	cache      bool
 	batchSize  int
 
-	conn       *Connection
+	conn *Connection
 }
 
 func (c *Connection) NewQuery(aql string, params ...interface{}) *Query {
@@ -90,7 +90,7 @@ func (q *Query) One(result interface{}) (err error) {
 	}
 
 	// Check for no results
-	if (len(reply.Result) <= 0) {
+	if len(reply.Result) <= 0 {
 		return errc.ErrorCodeNoResult.Error()
 	}
 
@@ -100,6 +100,40 @@ func (q *Query) One(result interface{}) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (q *Query) AllBytes() (*types.Results, error) {
+	aql, err := json.Marshal(&types.Query{
+		Aql:       q.aql,
+		Count:     true,
+		BatchSize: q.batchSize,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := q.conn.post(fmt.Sprintf("_db/%s/_api/cursor", q.conn.db), aql)
+	if err != nil {
+		return nil, err
+	}
+
+	reply := new(types.Results)
+	err = json.Unmarshal(resp, reply)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check for DB error
+	if reply.Error {
+		return nil, errors.New("Query error")
+	}
+
+	// Check for no results
+	if len(reply.Result) <= 0 {
+		return nil, errc.ErrorCodeNoResult.Error()
+	}
+
+	return reply, nil
 }
 
 func (q *Query) All(result interface{}) (err error) {
@@ -129,7 +163,7 @@ func (q *Query) All(result interface{}) (err error) {
 	}
 
 	// Check for no results
-	if (len(reply.Result) <= 0) {
+	if len(reply.Result) <= 0 {
 		return errc.ErrorCodeNoResult.Error()
 	}
 

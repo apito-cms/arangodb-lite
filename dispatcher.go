@@ -1,12 +1,12 @@
 package arangodb
 
 import (
-	"net/http"
 	"bytes"
-	"io/ioutil"
 	"fmt"
-	"github.com/thedanielforum/arangodb/types"
 	"github.com/apex/log"
+	"github.com/apito-cms/arangodb-lite/types"
+	"io/ioutil"
+	"net/http"
 )
 
 func (c *Connection) get(endpoint string) ([]byte, error) {
@@ -127,4 +127,3 @@ func (c *Connection) del(endpoint string, body []byte) ([]byte, error) {
 
 	return respBody, nil
 }
-

@@ -1,10 +1,10 @@
 package arangodb
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/apex/log"
-	"github.com/thedanielforum/arangodb/types"
+	"github.com/apito-cms/arangodb-lite/types"
 )
 
 type credentials struct {
@@ -21,7 +21,7 @@ func (c *Connection) authenticate(user, pass string) error {
 	creds, err := json.Marshal(&credentials{
 		Username: user,
 		Password: pass,
-	});
+	})
 	if err != nil {
 		return err
 	}
@@ -45,4 +45,3 @@ func (c *Connection) authenticate(user, pass string) error {
 
 	return nil
 }
-

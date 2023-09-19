@@ -1,11 +1,11 @@
 package arangodb
 
 import (
-	"github.com/apex/log"
-	"github.com/thedanielforum/arangodb/types"
-	"fmt"
 	"encoding/json"
-	"github.com/thedanielforum/arangodb/errc"
+	"fmt"
+	"github.com/apex/log"
+	"github.com/apito-cms/arangodb-lite/errc"
+	"github.com/apito-cms/arangodb-lite/types"
 )
 
 func (c *Connection) SetDB(db string) *Connection {
@@ -59,4 +59,3 @@ func (c *Connection) ListDBs() (*types.Dbs, error) {
 
 	return dbs, nil
 }
-

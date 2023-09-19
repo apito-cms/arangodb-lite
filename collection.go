@@ -1,21 +1,21 @@
 package arangodb
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/apex/log"
-	"github.com/thedanielforum/arangodb/errc"
-	"github.com/thedanielforum/arangodb/types"
+	"github.com/apito-cms/arangodb-lite/errc"
+	"github.com/apito-cms/arangodb-lite/types"
 )
 
-//type 2 = document collection
-//type 3 = edge collection
+// type 2 = document collection
+// type 3 = edge collection
 const (
 	TypeDoc = iota + 2
 	TypeEdge
 )
 
-//name = collection of name
+// name = collection of name
 type CollectionProp struct {
 	JournalSize uint                   `json:"journalSize,omitempty"`
 	Name        string                 `json:"name"`
@@ -23,7 +23,7 @@ type CollectionProp struct {
 	WaitForSync bool                   `json:"waitForSync,omitempty"`
 	isVolatile  bool                   `json:"isVolatile,omitempty"`
 	Shards      int                    `json:"numberOfShards,omitempty"`
-	ShardKeys   []string `              json:"shardKeys,omitempty"`
+	ShardKeys   []string               `              json:"shardKeys,omitempty"`
 	Keys        map[string]interface{} `json:"keyOptions,omitempty"`
 }
 

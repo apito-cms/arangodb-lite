@@ -2,9 +2,9 @@ package arangodb
 
 import (
 	"encoding/json"
-	"github.com/apex/log"
 	"fmt"
-	"github.com/thedanielforum/arangodb/errc"
+	"github.com/apex/log"
+	"github.com/apito-cms/arangodb-lite/errc"
 )
 
 func (c *Connection) Create(col string, doc interface{}) (*Document, error) {
@@ -17,7 +17,7 @@ func (c *Connection) Create(col string, doc interface{}) (*Document, error) {
 
 	// Collection Confirm Exist Now , Proceed to perform save document/edge
 	url := fmt.Sprintf("_db/%s/_api/document/%s", c.db, col)
-	encoded,err := json.Marshal(doc)
+	encoded, err := json.Marshal(doc)
 	if err != nil {
 		return responseDoc, err
 	}
