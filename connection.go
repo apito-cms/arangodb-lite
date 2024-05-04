@@ -1,12 +1,12 @@
 package arangodb
 
 import (
-	"time"
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/text"
 	"net/http"
 	"os"
-	"github.com/apex/log/handlers/text"
-	"github.com/apex/log"
 	"sync"
+	"time"
 )
 
 const defaultTimeOut = time.Second * 10
@@ -18,30 +18,31 @@ func init() {
 
 // Config for the database session.
 type Config struct {
-	Timeout           time.Duration
-	KeepAlivePeriod   time.Duration
+	Timeout         time.Duration
+	KeepAlivePeriod time.Duration
 	// By default use JWT to authenticate.
 	// TODO create basic auth function
-	UseHttpBasicAuth  bool
+	UseHttpBasicAuth bool
 	// Log all http requests to db.
-	DebugMode         bool
+	DebugMode bool
 	// Automatically create edge/collection on insert if non existing
 	AutoCreateColOnInsert bool
+	TLS                   bool
 }
 
 type Connection struct {
-	client   *http.Client
-	header   http.Header
+	client *http.Client
+	header http.Header
 
-	mu       sync.Mutex
+	mu sync.Mutex
 	// Connection options
-	config   *Config
+	config *Config
 	// Host address
-	host     string
+	host string
 	// Database
-	db       string
+	db string
 	// Authentication token
-	token    string
+	token string
 	// Collection cache
 	colCache map[string]map[string]bool
 }
@@ -50,7 +51,7 @@ func NewConnection(host, username, password string, config *Config) (*Connection
 	var err error
 	c := new(Connection)
 	c.config = config
-	c.host   = buildHostAddress(host, false)
+	c.host = buildHostAddress(host, config.TLS)
 	c.header = http.Header{}
 	c.colCache = make(map[string]map[string]bool)
 	// Set default headers
@@ -76,4 +77,3 @@ func NewConnection(host, username, password string, config *Config) (*Connection
 
 	return c, nil
 }
-
